@@ -15,25 +15,30 @@ typedef struct Arvore{
 	char flag;	
 }Arvore, *Parvore;
 
+int lines = 1;
+char separadores[] = {' ','\n','\t','_','-','.',',','!','?',':',';',EOF}
+
 void inicializa(Parvore *node);
-void inserir(Parvore *node, char *palavra);
-int buscar(Parvore node, char *palavra);
+void inserir_palavra(Parvore *node, char *palavra);
+int buscar_palavra(Parvore node, char *palavra);
+int seekChar(char *str, char ch);
 
 
 int main(int argc, char *argv[]){
 
 	FILE *arquivo1, *arquivo2;
 	Parvore arvore;
-	char caracter, carac_dicio;
+	char carac_text, carac_dicio;
 	char word[2000000];
-	int i = 0;
+	char word_text[2000000];
+	int i = 0, tam = 0, j = 0;
 
 	inicializa(&arvore);
 
 	arquivo1 = fopen(argv[1], "r");
-	//arquivo2 = fopen(argv[2], "a");
+	arquivo2 = fopen(argv[2], "r");
 
-	//pegando todas as palavras do dicionario e inserindo na arvore trie
+	//PEGANDO TODAS AS PALAVRAS DO DICIONARIO E INSERINDO NA ARVORE TRIE
 	while((carac_dicio = fgetc(arquivo1)) != EOF){
 
 		if(carac_dicio != '\n'){
@@ -43,15 +48,48 @@ int main(int argc, char *argv[]){
 		else{
 			word[i] = '\0';
 			i = 0;
-			inserir(&arvore, word);
+			inserir_palavra(&arvore, word);
 		}
 
 	}
 
-	//lendo todos os caracteres do arquivo2
+	//LENDO E TRATANDO TODOS OS CARACTERES DO ARQUIVO2
+	while((carac_text = fgetc(arquivo2)) != EOF)
+		tam++;
+
+	//criando string com todo o conteudo do texto
+	char string[tam];
+	rewind(arquivo2);
+	i = 0;
+	while((carac_text = fgetc(arquivo2)) != EOF){
+		string[i] = carac_text;
+		i++;
+	}
+	string[i] = '\0'; //o texto todo esta nessa string
+
+	for(j = 0; j < tam; j++){
+		
+		if(seekChar(separadores, string[i])){
+			word_text[i] = '\0';
+			i = 0;
+
+			//se achar a palavra na arvore
+			if((buscar_palavra(arvore,word_text)) == 1){
+
+			}
+
+
+			if(string[i] == '\n')
+				lines++;
+		}
+		else{
+			word_text[i] = string[i];
+			i++;
+		}
+	}
 
 	fclose(arquivo1);
-	//fclose(arquivo2);
+	fclose(arquivo2);
 	return 0;
 }
 
@@ -59,7 +97,7 @@ void inicializa(Parvore *node){
 	*node = NULL;
 }
 
-void inserir(Parvore *node, char *palavra){
+void inserir_palavra(Parvore *node, char *palavra){
 
 	int i;
 
@@ -84,7 +122,7 @@ void inserir(Parvore *node, char *palavra){
 }
 
 //funcao que retorna '0' caso a palavra desejada nao se encontra na arvore trie. Se estiver no dicionario, retorna '1'
-int buscar(Parvore node, char *palavra){
+int buscar_palavra(Parvore node, char *palavra){
 	if(node == NULL)
 		return 0;
 	else
@@ -92,4 +130,13 @@ int buscar(Parvore node, char *palavra){
 			return (node->flag ? 1:0); //retornando 1 ou 0 caso a palavra esteja ou nao no dicionario, respectivamente
 		else
 			return buscar(node->v[palavra[0] - 'a'], palavra + 1);
+}
+
+int seekChar(char *str, char ch){
+
+    int i;
+    for(i = 0; i < strlen(str); i++)
+        if (str[i] == ch)
+            return 1;
+    return 0;
 }
