@@ -16,7 +16,7 @@ typedef struct Arvore{
 }Arvore, *Parvore;
 
 int lines = 1;
-char separadores[] = {' ','\n','\t','_','-','.',',','!','?',':',';',EOF}
+char separadores[] = {' ','\n','\t','_','-','.',',','!','?',':',';'};
 
 void inicializa(Parvore *node);
 void inserir_palavra(Parvore *node, char *palavra);
@@ -67,23 +67,27 @@ int main(int argc, char *argv[]){
 	}
 	string[i] = '\0'; //o texto todo esta nessa string
 
+	i = 0;
 	for(j = 0; j < tam; j++){
 		
-		if(seekChar(separadores, string[i])){
+		if(seekChar(separadores, string[j])){
 			word_text[i] = '\0';
 			i = 0;
 
 			//se achar a palavra na arvore
 			if((buscar_palavra(arvore,word_text)) == 1){
 
+				//colocar aqui tratamento para imprimir todas as linhas que a palavra se repete
+
+				printf("%s %d\n", word_text, lines);
 			}
 
 
-			if(string[i] == '\n')
+			if(string[j] == '\n')
 				lines++;
 		}
 		else{
-			word_text[i] = string[i];
+			word_text[i] = string[j];
 			i++;
 		}
 	}
@@ -106,7 +110,7 @@ void inserir_palavra(Parvore *node, char *palavra){
 		for(i = 0; i < TAMANHO; i++)
 			(*node)->v[i] = NULL;
 		if(palavra[0] != '\0'){
-			inserir(&(*node)->v[palavra[0] - 'a'], palavra + 1);
+			inserir_palavra(&(*node)->v[palavra[0] - 'a'], palavra + 1);
 			(*node)->flag = 0;
 		}
 		else
@@ -114,7 +118,7 @@ void inserir_palavra(Parvore *node, char *palavra){
 	}
 	else{
 		if(palavra[0] != '\0'){
-			inserir(&(*node)->v[palavra[0] - 'a'], palavra + 1);
+			inserir_palavra(&(*node)->v[palavra[0] - 'a'], palavra + 1);
 		}
 		else
 			(*node)->flag = 1;
@@ -129,7 +133,7 @@ int buscar_palavra(Parvore node, char *palavra){
 		if(palavra[0] == '\0')
 			return (node->flag ? 1:0); //retornando 1 ou 0 caso a palavra esteja ou nao no dicionario, respectivamente
 		else
-			return buscar(node->v[palavra[0] - 'a'], palavra + 1);
+			return buscar_palavra(node->v[palavra[0] - 'a'], palavra + 1);
 }
 
 int seekChar(char *str, char ch){
