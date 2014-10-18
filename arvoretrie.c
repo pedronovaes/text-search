@@ -170,10 +170,12 @@ int main(int argc, char *argv[]){
 	}
 	//imprimir(lista2);
 	for(z = lista2; (z != NULL); z = z->prox){
-		printf("%s\n", z->palavra);
+		printf("%s ", z->palavra);
 		//for(y = lista3; (y != NULL); y = y->prox){
 			buscarMenor(arvore, z->palavra);
 			printf("%s\n", menorpalavra);
+			menorpalavra[0] = '\0';
+			menor = 100;
 
 	}
 }
